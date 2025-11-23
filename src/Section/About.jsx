@@ -38,7 +38,7 @@ const About = () => {
             <div>
               <p className="grid-headtext">Tech Stack</p>
               <p className="grid-subtext">
-              I specialize in crafting powerful, scalable applications using a versatile tech stack, including React.js, Node.js, Express, and MongoDB. My expertise ensures the creation of high-performance, secure, and responsive web solutions that elevate user experiences.
+              I build scalable backend systems using Node.js, Express.js, MongoDB, Redis, Kafka, Docker, and Kubernetes, with a focus on performance, security, and cloud-native architecture.
               </p>
             </div>
           </div>
