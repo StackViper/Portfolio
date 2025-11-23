@@ -8,7 +8,7 @@ const Footer = () => {
         </div>
         <div className="flex gap-3 items-center justify-center">
   <div className="social-icon">
-    <a href="https://github.com/Ritu14012004" target="_blank" rel="noopener noreferrer">
+    <a href="https://github.com/StackViper" target="_blank" rel="noopener noreferrer">
       <img src="/assets/github.svg" alt="github" className="w-8 h-8" />
     </a>
   </div>

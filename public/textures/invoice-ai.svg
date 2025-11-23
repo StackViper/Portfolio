@@ -1,0 +1,10 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" fill="#020617"/>
+  <pattern id="grid3" width="20" height="20" patternUnits="userSpaceOnUse">
+    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1e293b" stroke-width="1"/>
+  </pattern>
+  <rect width="200" height="200" fill="url(#grid3)" />
+  <circle cx="100" cy="100" r="40" fill="#60a5fa" opacity="0.3"/>
+  <circle cx="100" cy="100" r="30" fill="#60a5fa" opacity="0.5"/>
+  <circle cx="100" cy="100" r="20" fill="#60a5fa" opacity="0.7"/>
+</svg>

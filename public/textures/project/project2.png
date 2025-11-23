@@ -1,0 +1,11 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#13202F"/>
+  <pattern id="grid2" width="20" height="20" patternUnits="userSpaceOnUse">
+    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#17293E" stroke-width="1"/>
+  </pattern>
+  <rect width="400" height="300" fill="url(#grid2)" />
+  <circle cx="200" cy="150" r="40" fill="#2F6DB5" opacity="0.3"/>
+  <circle cx="200" cy="150" r="30" fill="#2F6DB5" opacity="0.5"/>
+  <circle cx="200" cy="150" r="20" fill="#2F6DB5" opacity="0.7"/>
+  <text x="200" y="155" text-anchor="middle" fill="#ffffff" font-size="12" font-family="Arial">Food Booking</text>
+</svg>

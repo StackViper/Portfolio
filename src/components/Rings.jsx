@@ -1,7 +1,8 @@
 import { useGSAP } from '@gsap/react';
-import { Center, useTexture } from '@react-three/drei';
+import { Center } from '@react-three/drei';
 import gsap from 'gsap';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
+import * as THREE from 'three';
 
 const Rings = ({ position }) => {
   const refList = useRef([]);
@@ -11,7 +12,23 @@ const Rings = ({ position }) => {
     }
   }, []);
 
-  const texture = useTexture('textures/rings.png');
+  // Create a procedural texture instead of loading from file
+  const [texture] = useState(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+    
+    // Create gradient background
+    const gradient = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+    gradient.addColorStop(0, '#60a5fa');
+    gradient.addColorStop(0.5, '#3b82f6');
+    gradient.addColorStop(1, '#1e40af');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 256, 256);
+    
+    return new THREE.CanvasTexture(canvas);
+  });
 
   useGSAP(
     () => {
@@ -49,7 +66,7 @@ const Rings = ({ position }) => {
         {Array.from({ length: 4 }, (_, index) => (
           <mesh key={index} ref={getRef}>
             <torusGeometry args={[(index + 1) * 0.5, 0.1]}></torusGeometry>
-            <meshMatcapMaterial matcap={texture} toneMapped={false} />
+            <meshMatcapMaterial matcap={texture || null} toneMapped={false} />
           </mesh>
         ))}
       </group>

@@ -1,31 +1,156 @@
 
 
 
-import { useRef, useEffect } from 'react';
-import { useGLTF, useAnimations, useVideoTexture } from '@react-three/drei';
+import { useRef, useEffect, useState } from 'react';
+import { useGLTF, useAnimations, useTexture } from '@react-three/drei';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import * as THREE from 'three';
 
 const DemoComputer = (props) => {
   const group = useRef();
   const { nodes, materials, animations } = useGLTF('/models/computer.glb');
   const { actions } = useAnimations(animations, group);
+  const [logoTexture, setLogoTexture] = useState(null);
 
-  const txt = useVideoTexture(props.texture ? props.texture : '/textures/project/project1.mp4');
+  // Extract project information from props
+  const projectInfo = props.projectInfo || {
+    title: "PROJECT",
+    subtitle: "DEMO",
+    primaryColor: "#60a5fa",
+    secondaryColor: "#3b82f6",
+    bgColor: "#1f2937"
+  };
 
+  // Load project logo texture
   useEffect(() => {
-    if (txt) {
-      txt.flipY = false;
-    }
-  }, [txt]);
+    // Create a canvas with the project logo
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+
+    // Create texture from canvas
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.flipY = false;
+    setLogoTexture(texture);
+
+    // Animate the texture with project-specific content
+    let animationId;
+    const animate = () => {
+      const time = Date.now() * 0.001;
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, 512, 512);
+
+      // Animated gradient background with project color
+      const gradient = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
+      const hue = (time * 30) % 360;
+      gradient.addColorStop(0, projectInfo.primaryColor + '40');
+      gradient.addColorStop(0.5, projectInfo.secondaryColor + '60');
+      gradient.addColorStop(1, projectInfo.bgColor);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 512, 512);
+
+      // Animated grid pattern
+      ctx.strokeStyle = projectInfo.primaryColor + '30';
+      ctx.lineWidth = 1;
+      const gridSize = 32;
+      const offset = (time * 10) % gridSize;
+      
+      for (let i = -gridSize; i < 512 + gridSize; i += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(i + offset, 0);
+        ctx.lineTo(i + offset, 512);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, i + offset);
+        ctx.lineTo(512, i + offset);
+        ctx.stroke();
+      }
+
+      // Animated project title with glow
+      ctx.save();
+      ctx.shadowColor = projectInfo.primaryColor;
+      ctx.shadowBlur = 15 + Math.sin(time * 3) * 5;
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 32px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(projectInfo.title, 256, 180);
+      ctx.fillText(projectInfo.subtitle, 256, 220);
+      ctx.restore();
+
+      // Multiple animated circles with project colors
+      for (let i = 0; i < 3; i++) {
+        const radius = 40 + i * 20;
+        const pulseSize = radius + Math.sin(time * 2 + i) * 10;
+        const alpha = 0.6 - i * 0.2;
+        
+        ctx.strokeStyle = projectInfo.primaryColor + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+        ctx.lineWidth = 3 - i * 0.5;
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = projectInfo.primaryColor;
+        
+        ctx.beginPath();
+        ctx.arc(256, 280, pulseSize, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Rotating elements
+      ctx.save();
+      ctx.translate(256, 280);
+      ctx.rotate(time);
+      
+      for (let i = 0; i < 8; i++) {
+        const angle = (Math.PI * 2 / 8) * i;
+        const x = Math.cos(angle) * 100;
+        const y = Math.sin(angle) * 100;
+        
+        ctx.fillStyle = projectInfo.primaryColor;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = projectInfo.primaryColor;
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // Center element
+      const centerPulse = 8 + Math.sin(time * 4) * 3;
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(256, 280, centerPulse, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Update texture
+      texture.image = canvas;
+      texture.needsUpdate = true;
+      
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+      texture.dispose();
+    };
+  }, [projectInfo]);
 
   useGSAP(() => {
-    gsap.from(group.current.rotation, {
-      y: Math.PI / 2,
-      duration: 1,
-      ease: 'power3.out',
-    });
-  }, [txt]);
+    if (group.current && logoTexture) {
+      // Only initial entrance animation, no continuous movement
+      gsap.from(group.current.rotation, {
+        y: Math.PI / 2,
+        duration: 1,
+        ease: 'power3.out',
+      });
+    }
+  }, [logoTexture]);
 
   return (
     <group ref={group} {...props} dispose={null}>
@@ -39,7 +164,7 @@ const DemoComputer = (props) => {
           position={[0.127, 1.831, 0.511]}
           rotation={[1.571, -0.005, 0.031]}
           scale={[0.661, 0.608, 0.401]}>
-          <meshBasicMaterial map={txt} toneMapped={false} />
+          <meshBasicMaterial map={logoTexture} toneMapped={false} />
         </mesh>
         <group name="RootNode" position={[0, 1.093, 0]} rotation={[-Math.PI / 2, 0, -0.033]} scale={0.045}>
           <group

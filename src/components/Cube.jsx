@@ -3,12 +3,34 @@
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useRef, useState } from 'react';
-import { Float, useGLTF, useTexture } from '@react-three/drei';
+import { Float, useGLTF } from '@react-three/drei';
+import * as THREE from 'three';
 
 const Cube = ({ ...props }) => {
   const { nodes } = useGLTF('models/cube.glb');
 
-  const texture = useTexture('textures/cube.png');
+  // Create a procedural texture instead of loading from file
+  const [texture] = useState(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+    
+    // Create gradient background
+    const gradient = ctx.createLinearGradient(0, 0, 256, 256);
+    gradient.addColorStop(0, '#60a5fa');
+    gradient.addColorStop(0.5, '#3b82f6');
+    gradient.addColorStop(1, '#1e40af');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 256, 256);
+    
+    // Add some pattern
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(64, 64, 128, 128);
+    
+    return new THREE.CanvasTexture(canvas);
+  });
 
   const cubeRef = useRef();
   const [hovered, setHovered] = useState(false);

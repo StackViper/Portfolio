@@ -4,23 +4,52 @@ Command: npx gltfjsx@6.5.0 hacker-room-new.glb -T
 Files: hacker-room-new.glb [34.62MB] > /Users/hsuwinlat/Desktop/jsm pj/threejscc-portfolio/public/models/hacker-room-new-transformed.glb [2.56MB] (93%)
 */
 
-import { useGLTF, useTexture } from '@react-three/drei';
+import { useGLTF } from '@react-three/drei';
+import { useEffect, useState } from 'react';
+import * as THREE from 'three';
 
-const HackerRoom=(props)=> {
+const HackerRoom = (props) => {
   const { nodes, materials } = useGLTF('/models/hacker-room.glb');
+  const [monitortxt, setMonitortxt] = useState(null);
+  const [screenTxt, setScreenTxt] = useState(null);
 
-  const monitortxt = useTexture('textures/desk/monitor.png');
-  const screenTxt = useTexture('textures/desk/screen.png');
+  useEffect(() => {
+    // Load textures asynchronously to avoid render phase updates
+    const loadTextures = async () => {
+      try {
+        const monitorLoader = new THREE.TextureLoader();
+        const screenLoader = new THREE.TextureLoader();
+        
+        monitorLoader.load(
+          'textures/desk/monitor.png',
+          (texture) => setMonitortxt(texture),
+          undefined,
+          (error) => console.warn('Monitor texture failed to load:', error)
+        );
+        
+        screenLoader.load(
+          'textures/desk/screen.png',
+          (texture) => setScreenTxt(texture),
+          undefined,
+          (error) => console.warn('Screen texture failed to load:', error)
+        );
+      } catch (error) {
+        console.warn('Texture loading failed:', error);
+      }
+    };
+
+    loadTextures();
+  }, []);
 
   return (
     <group {...props} dispose={null}>
       <mesh geometry={nodes.screen_screens_0.geometry} material={materials.screens}>
-        <meshMatcapMaterial map={screenTxt} />
+        {screenTxt && <meshMatcapMaterial map={screenTxt} />}
       </mesh>
       <mesh geometry={nodes.screen_glass_glass_0.geometry} material={materials.glass} />
       <mesh geometry={nodes.table_table_mat_0_1.geometry} material={materials.table_mat} />
       <mesh geometry={nodes.table_table_mat_0_2.geometry} material={materials.computer_mat}>
-        <meshMatcapMaterial map={monitortxt} />
+        {monitortxt && <meshMatcapMaterial map={monitortxt} />}
       </mesh>
       <mesh geometry={nodes.table_table_mat_0_3.geometry} material={materials.server_mat} />
       <mesh geometry={nodes.table_table_mat_0_4.geometry} material={materials.vhsPlayer_mat} />
@@ -28,7 +57,7 @@ const HackerRoom=(props)=> {
       <mesh geometry={nodes.table_table_mat_0_6.geometry} material={materials.mat_mat} />
       <mesh geometry={nodes.table_table_mat_0_7.geometry} material={materials.arm_mat} />
       <mesh geometry={nodes.table_table_mat_0_8.geometry} material={materials.tv_mat}>
-        <meshMatcapMaterial map={monitortxt} />
+        {monitortxt && <meshMatcapMaterial map={monitortxt} />}
       </mesh>
       <mesh geometry={nodes.table_table_mat_0_9.geometry} material={materials.cables_mat} />
       <mesh geometry={nodes.table_table_mat_0_10.geometry} material={materials.props_mat} />

@@ -12,6 +12,14 @@ const Contact = () => {
 
   const [form, setForm] = useState({ name: '', email: '', message: '' });
 
+  // EmailJS configuration
+  const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_cqlwf8m';
+  const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_w2c2ohn';
+  const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'IBI-W4kVGZYBiatj2';
+
+  // Initialize EmailJS with public key
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+
   const handleChange = ({ target: { name, value } }) => {
     setForm({ ...form, [name]: value });
   };
@@ -20,29 +28,53 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true); 
 
+    // Validate form
+    if (!form.name || !form.email || !form.message) {
+      showAlert({ type: 'danger', message: 'Please fill in all fields.' });
+      setLoading(false);
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      showAlert({ type: 'danger', message: 'Please enter a valid email address.' });
+      setLoading(false);
+      return;
+    }
+
     emailjs
-      .sendForm('service_cqlwf8m', 'template_w2c2ohn', formRef.current, 'IBI-W4kVGZYBiatj2')
+      .sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, formRef.current, EMAILJS_PUBLIC_KEY)
       .then(
-        () => {
-          console.log('SUCCESS!');
+        (response) => {
+          console.log('SUCCESS!', response.status, response.text);
           setLoading(false); 
           showAlert({ type: 'success', message: 'Message sent successfully!' });
           setForm({ name: '', email: '', message: '' }); 
 
-          
           setTimeout(() => {
             hideAlert();
-          }, 1000);
+          }, 5000);
         },
         (error) => {
-          console.log('FAILED...', error.text);
+          console.log('FAILED...', error);
           setLoading(false);
-          showAlert({ type: 'error', message: 'Failed to send the message.' });
-
           
+          // More specific error messages
+          let errorMessage = 'Failed to send the message.';
+          if (error.text.includes('network')) {
+            errorMessage = 'Network error. Please check your connection and try again.';
+          } else if (error.text.includes('invalid')) {
+            errorMessage = 'Invalid email configuration. Please contact the administrator.';
+          } else if (error.text.includes('blocked')) {
+            errorMessage = 'Email service temporarily unavailable. Please try again later.';
+          }
+          
+          showAlert({ type: 'danger', message: errorMessage });
+
           setTimeout(() => {
             hideAlert();
-          }, 2000);
+          }, 5000);
         },
       );
   };
@@ -61,6 +93,10 @@ const Contact = () => {
           </p>
 
           <form ref={formRef} onSubmit={handleSubmit} className="mt-12 flex flex-col space-y-7">
+            {/* Hidden field for EmailJS reply-to functionality */}
+            <input type="hidden" name="reply_to" value={form.email} />
+            <input type="hidden" name="from_name" value={form.name} />
+            
             <label className="space-y-3">
               <span className="field-label">Full Name</span>
               <input

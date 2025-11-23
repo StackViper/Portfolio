@@ -1,0 +1,13 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#1f2937"/>
+  <rect x="20" y="20" width="360" height="260" rx="8" fill="#374151"/>
+  <text x="200" y="60" text-anchor="middle" fill="#ffffff" font-size="24" font-family="Arial" font-weight="bold">TicketBazzar</text>
+  <text x="200" y="90" text-anchor="middle" fill="#9ca3af" font-size="14" font-family="Arial">Real-Time Ticket Booking</text>
+  <rect x="40" y="120" width="320" height="120" rx="4" fill="#1f2937"/>
+  <path d="M60 140H340V160H60V140Z" fill="#60a5fa"/>
+  <path d="M60 170H340V190H60V170Z" fill="#60a5fa"/>
+  <path d="M60 200H340V220H60V200Z" fill="#60a5fa"/>
+  <circle cx="80" cy="150" r="4" fill="#ffffff"/>
+  <circle cx="80" cy="180" r="4" fill="#ffffff"/>
+  <circle cx="80" cy="210" r="4" fill="#ffffff"/>
+</svg>
